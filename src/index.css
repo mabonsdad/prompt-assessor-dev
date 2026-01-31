@@ -46,9 +46,9 @@ All colors MUST be HSL.
     --radius: 0.75rem;
 
     /* Chat-specific tokens */
-    --chat-user-bg: 220 13% 18%;
-    --chat-assistant-bg: 220 13% 13%;
-    --chat-critique-bg: 220 20% 16%;
+    --chat-user-bg: 220 15% 16%;
+    --chat-response-bg: 180 15% 12%;
+    --chat-critique-bg: 35 25% 12%;
     --chat-input-bg: 220 13% 15%;
 
     --sidebar-background: 220 13% 8%;

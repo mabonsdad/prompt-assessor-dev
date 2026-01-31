@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
   message: Message;
+  isPinned?: boolean;
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, isPinned }: ChatMessageProps) {
   const isUser = message.role === "user";
 
   return (
@@ -16,13 +17,15 @@ export function ChatMessage({ message }: ChatMessageProps) {
       <div
         className={cn(
           "flex gap-4 p-6 rounded-2xl transition-all",
-          isUser ? "bg-chat-user" : "bg-chat-assistant"
+          isUser 
+            ? "bg-chat-user border border-border/50" 
+            : "bg-chat-response border border-primary/20"
         )}
       >
         <div
           className={cn(
             "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
-            isUser ? "bg-primary/20 text-primary" : "bg-accent/20 text-accent"
+            isUser ? "bg-primary/20 text-primary" : "bg-primary/30 text-primary"
           )}
         >
           {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
@@ -30,7 +33,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
 
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium text-muted-foreground mb-2">
-            {isUser ? "You" : "Assistant"}
+            {isUser ? (isPinned ? "Your Prompt" : "You") : "AI Response"}
           </p>
           <div className="prose prose-invert prose-sm max-w-none">
             {message.content ? (
@@ -49,9 +52,9 @@ export function ChatMessage({ message }: ChatMessageProps) {
         </div>
       </div>
 
-      {/* Critique panel */}
+      {/* Critique panel - only show for assistant messages */}
       {!isUser && (message.critique || message.isLoading) && (
-        <div className="ml-12 bg-chat-critique border border-warning/20 rounded-2xl p-5 space-y-3">
+        <div className="bg-chat-critique border border-warning/30 rounded-2xl p-5 space-y-3">
           <div className="flex items-center gap-2 text-warning">
             <AlertTriangle className="w-4 h-4" />
             <span className="text-sm font-semibold">Prompt Analysis</span>

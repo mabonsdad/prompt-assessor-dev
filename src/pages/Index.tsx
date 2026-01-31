@@ -4,29 +4,50 @@ import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
 import { ChatHeader } from "@/components/ChatHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Index = () => {
   const { messages, sendMessage, isLoading, clearChat } = useChat();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const responseEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Get the last user message and its corresponding assistant response
+  const lastUserMessage = messages.filter(m => m.role === "user").slice(-1)[0];
+  const lastAssistantMessage = messages.filter(m => m.role === "assistant").slice(-1)[0];
+
+  // Auto-scroll response area when new content arrives
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    responseEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [lastAssistantMessage?.content, lastAssistantMessage?.critique]);
 
   return (
     <div className="flex flex-col h-screen bg-background">
       <ChatHeader onClear={clearChat} hasMessages={messages.length > 0} />
 
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {messages.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-            {messages.map((message) => (
-              <ChatMessage key={message.id} message={message} />
-            ))}
-            <div ref={messagesEndRef} />
+          <div className="flex-1 flex flex-col min-h-0 max-w-3xl mx-auto w-full px-4">
+            {/* Pinned User Prompt - max 50% height, scrollable */}
+            {lastUserMessage && (
+              <div className="flex-shrink-0 max-h-[50%] py-4">
+                <ScrollArea className="h-full">
+                  <ChatMessage message={lastUserMessage} isPinned />
+                </ScrollArea>
+              </div>
+            )}
+
+            {/* Response and Critique - independently scrollable */}
+            {lastAssistantMessage && (
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="py-4 space-y-4">
+                    <ChatMessage message={lastAssistantMessage} />
+                    <div ref={responseEndRef} />
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
           </div>
         )}
       </main>

@@ -57,7 +57,7 @@ export default {
           },
           chat: {
             user: "hsl(var(--chat-user-bg))",
-            assistant: "hsl(var(--chat-assistant-bg))",
+            response: "hsl(var(--chat-response-bg))",
             critique: "hsl(var(--chat-critique-bg))",
             input: "hsl(var(--chat-input-bg))",
           },
