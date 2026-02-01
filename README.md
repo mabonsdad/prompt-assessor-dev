@@ -4,6 +4,8 @@
 
 **URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
 
+> Note: This repository (`prompt-assessor-dev`) is the AWS/S3/Lambda version. The original Lovable-connected repo is kept separately for work that still relies on Lovable.
+
 ## How can I edit this code?
 
 There are several ways of editing your application.
