@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# AWS SAM
+.aws-sam/
+samconfig.toml
+
+# Lambda/infra (kept local for now)
+lambda/
+infra/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

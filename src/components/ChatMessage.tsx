@@ -2,6 +2,7 @@ import { User, Bot, AlertTriangle, Sparkles } from "lucide-react";
 import { Message } from "@/hooks/useChat";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 interface ChatMessageProps {
   message: Message;
@@ -10,6 +11,38 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, isPinned }: ChatMessageProps) {
   const isUser = message.role === "user";
+  const critique = message.critique || "";
+
+  const parsedCritique = (() => {
+    if (!critique) return null;
+    const lines = critique.split("\n");
+    let index = 0;
+    const firstLine = lines[index]?.trim() || "";
+    if (!firstLine.startsWith("#")) return null;
+    const score = firstLine.replace(/^#+\s*/, "").trim();
+    index += 1;
+    while (index < lines.length && lines[index].trim() === "") index += 1;
+    const summary = lines[index]?.trim() || "";
+    index += 1;
+    const rest = lines.slice(index).join("\n").trim();
+    if (!score || !summary) return null;
+    return { score, summary, rest };
+  })();
+
+  const critiqueComponents = {
+    h2: ({ children }: { children: ReactNode }) => (
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-warning/80">
+        {children}
+      </h3>
+    ),
+    hr: () => <hr className="border-warning/30" />,
+    ul: ({ children }: { children: ReactNode }) => (
+      <ul className="list-disc pl-5 space-y-2">{children}</ul>
+    ),
+    li: ({ children }: { children: ReactNode }) => (
+      <li className="text-sm text-muted-foreground">{children}</li>
+    ),
+  };
 
   return (
     <div className="space-y-4">
@@ -61,9 +94,25 @@ export function ChatMessage({ message, isPinned }: ChatMessageProps) {
             <Sparkles className="w-3 h-3 ml-auto opacity-50" />
           </div>
           
-          <div className="prose prose-invert prose-sm max-w-none prose-headings:text-warning prose-strong:text-warning/90">
+          <div className="space-y-4">
             {message.critique ? (
-              <ReactMarkdown>{message.critique}</ReactMarkdown>
+              <>
+                {parsedCritique ? (
+                  <div className="space-y-1">
+                    <div className="text-3xl font-semibold text-warning">
+                      {parsedCritique.score}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {parsedCritique.summary}
+                    </div>
+                  </div>
+                ) : null}
+                <div className="prose prose-invert prose-sm max-w-none prose-headings:text-warning prose-strong:text-warning/90">
+                  <ReactMarkdown components={critiqueComponents}>
+                    {parsedCritique ? parsedCritique.rest : message.critique}
+                  </ReactMarkdown>
+                </div>
+              </>
             ) : (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <div className="flex gap-1">
