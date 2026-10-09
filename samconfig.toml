@@ -1,0 +1,14 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "prompt-assessor-api"
+template_file = "infra/template.yaml"
+resolve_s3 = true
+s3_prefix = "prompt-assessor-api"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "AllowedOrigin=\"https://shwsh.co.uk\" AnswerModel=\"gpt-6-luna\" CoachModel=\"gpt-6-luna\" WorkflowModel=\"gpt-6.1-sol\" OpenAIBaseUrl=\"https://api.openai.com/v1\""
+image_repositories = []
+
+[default.global.parameters]
+region = "eu-west-2"

@@ -12,6 +12,8 @@ interface ChatMessageProps {
 export function ChatMessage({ message, isPinned }: ChatMessageProps) {
   const isUser = message.role === "user";
   const critique = message.critique || "";
+  const isWorkflowReview = message.mode === "workflow";
+  const reviewLabel = isWorkflowReview ? "Workflow Coach Feedback" : "Prompt Coach Feedback";
 
   const parsedCritique = (() => {
     if (!critique) return null;
@@ -45,11 +47,11 @@ export function ChatMessage({ message, isPinned }: ChatMessageProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Main message */}
       <div
         className={cn(
-          "flex gap-4 p-6 rounded-2xl transition-all",
+          "flex gap-3 rounded-2xl p-3 transition-all sm:gap-4 sm:p-5",
           isUser 
             ? "bg-chat-user border border-border/50" 
             : "bg-chat-response border border-primary/20"
@@ -66,7 +68,7 @@ export function ChatMessage({ message, isPinned }: ChatMessageProps) {
 
         <div className="flex-1 min-w-0">
           <p className="text-xs font-medium text-muted-foreground mb-2">
-            {isUser ? (isPinned ? "Your Prompt" : "You") : "AI Response"}
+            {isUser ? (isPinned ? "Your Prompt" : "You") : (isWorkflowReview ? "Brief trial answer" : "Trial answer")}
           </p>
           <div className="prose prose-invert prose-sm max-w-none">
             {message.content ? (
@@ -82,15 +84,18 @@ export function ChatMessage({ message, isPinned }: ChatMessageProps) {
               </div>
             ) : null}
           </div>
+          {isUser && message.attachmentName && (
+            <p className="mt-3 text-sm text-muted-foreground">Attached: {message.attachmentName}</p>
+          )}
         </div>
       </div>
 
       {/* Critique panel - only show for assistant messages */}
       {!isUser && (message.critique || message.isLoading) && (
-        <div className="bg-chat-critique border border-warning/30 rounded-2xl p-5 space-y-3">
+        <div className="space-y-3 rounded-2xl border border-warning/30 bg-chat-critique p-3 sm:p-5">
           <div className="flex items-center gap-2 text-warning">
             <AlertTriangle className="w-4 h-4" />
-            <span className="text-sm font-semibold">Prompt Analysis</span>
+            <span className="text-sm font-semibold">{reviewLabel}</span>
             <Sparkles className="w-3 h-3 ml-auto opacity-50" />
           </div>
           
@@ -99,7 +104,7 @@ export function ChatMessage({ message, isPinned }: ChatMessageProps) {
               <>
                 {parsedCritique ? (
                   <div className="space-y-1">
-                    <div className="text-3xl font-semibold text-warning">
+                    <div className={cn("font-semibold text-warning", isWorkflowReview ? "text-xl" : "text-3xl")}>
                       {parsedCritique.score}
                     </div>
                     <div className="text-sm text-muted-foreground">

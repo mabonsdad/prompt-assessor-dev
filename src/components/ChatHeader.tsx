@@ -1,4 +1,4 @@
-import { MessageSquare, Trash2, Sparkles } from "lucide-react";
+import { MessageSquare, Trash2 } from "lucide-react";
 
 interface ChatHeaderProps {
   onClear: () => void;
@@ -7,26 +7,19 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ onClear, hasMessages }: ChatHeaderProps) {
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-          <MessageSquare className="w-5 h-5 text-primary" />
+    <header className="hidden items-center justify-between border-b border-border bg-card/50 px-5 py-2.5 sm:flex">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20">
+          <MessageSquare className="h-4 w-4 text-primary" />
         </div>
-        <div>
-          <h1 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            Prompt Coach
-            <Sparkles className="w-4 h-4 text-primary" />
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            Get AI responses + prompt improvement tips
-          </p>
-        </div>
+        <h1 className="text-sm font-semibold text-foreground">Prompt Assessor</h1>
       </div>
 
       {hasMessages && (
         <button
           onClick={onClear}
-          className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+          aria-label="Clear chat"
+          className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
           title="Clear chat"
         >
           <Trash2 className="w-5 h-5" />

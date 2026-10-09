@@ -1,75 +1,43 @@
-# Welcome to your Lovable project
+# Prompt Assessor
 
-## Project info
+[Try the live app](https://shwsh.co.uk/experiments/prompt-assessor/) · [Run a 30-minute training session](docs/training-session.md) · [Architecture and safety](docs/architecture-and-safety.md) · [Maintainer guide](docs/maintainer-guide.md)
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Prompt Assessor is a mobile-friendly training exercise for writing better AI requests. A trainee enters **one prompt** and sees a short, illustrative trial answer followed by coaching on what would make that prompt more reliable. It is deliberately **not** a way to complete a workplace task: it has no private connectors, cannot send messages or update records, and does not enforce the approval stages it recommends.
 
-> Note: This repository (`prompt-assessor-dev`) is the AWS/S3/Lambda version. The original Lovable-connected repo is kept separately for work that still relies on Lovable.
+| Mode | Best for | Review output |
+| --- | --- | --- |
+| **Prompt Coach** | A short question or single-purpose drafting request | A proportionate score, material gaps, and a concise rewrite when one is needed. A clear factual question is not penalised for lacking a persona or elaborate format. |
+| **Workflow Coach** | Research, document work, or a multi-step request | Separate mission ambiguity from missing evidence; suggest an **advice-only** sequence of sources, potential tools/connectors, checks and human gates; then write a reusable prompt for the central AI step. |
 
-## How can I edit this code?
+Workflow Coach accepts an optional PDF, DOCX, TXT, Markdown or CSV file up to 2 MB. The paperclip presents a privacy warning before the file chooser opens. Its optional **Check public sources in review** setting allows web search in the *critique only*; the trial answer never searches. Unknown details in the suggested prompt are marked `[like this]` rather than invented. The mobile trial answer is shorter, but the review requirements are the same.
 
-There are several ways of editing your application.
+The trial answer and review are model outputs, not verified facts or professional clearance. An attachment is passed to both calls. Use synthetic or authorised, de-identified material in training; do not upload confidential or personal data without organisational approval. See [data flow and limitations](docs/architecture-and-safety.md).
 
-**Use Lovable**
+## What is in this repository
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- `src/`: Vite/React/TypeScript frontend, including the two-mode interface.
+- `lambda/chat/`: Node.js AWS Lambda that calls the OpenAI Responses API.
+- `infra/template.yaml` and `samconfig.toml`: AWS SAM API configuration and **non-secret** deployment defaults.
+- `scripts/evaluate-coaches.mjs`: synthetic live-API regression exercise; it incurs model usage.
+- `docs/`: session plan, operational guidance and [dated evaluation notes](docs/coach-evaluation-2026-10-08.md).
 
-Changes made via Lovable will be committed automatically to this repo.
+The frontend is hosted separately as static files; the repository does **not** contain a full S3/CloudFront hosting template or automated deployment pipeline. The older Lovable-connected project is separate from this AWS version.
 
-**Use your preferred IDE**
+## Develop and check locally
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Use a supported Node.js version and npm:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm ci
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+For a local browser to call the deployed API, set `VITE_API_BASE_URL` to its public base URL in an ignored local environment file or your shell. `VITE_BASE_PATH` controls the static site subpath at build time (the live site uses `/experiments/prompt-assessor/`). Values beginning `VITE_` are bundled into browser code: **never put an API key there**. The OpenAI key belongs only in the Lambda's server-side configuration. [OpenAI's API guidance](https://developers.openai.com/api/reference/overview) likewise says not to expose keys in client-side code.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm test
+npm run build
+npm run lint
+```
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+`npm run lint` currently reports three pre-existing scaffold errors in `src/components/ui/command.tsx`, `src/components/ui/textarea.tsx` and `tailwind.config.ts`; tests and build are the passing checks for this version. The live evaluation script makes paid calls; run it only when needed and use synthetic prompts. Setup, key rotation, deployment checks and known limitations are in the [maintainer guide](docs/maintainer-guide.md).

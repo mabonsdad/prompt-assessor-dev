@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Prompt Assessor API (Lambda + HTTP API)
+
+Parameters:
+  OpenAIApiKey:
+    Type: String
+    NoEcho: true
+  AllowedOrigin:
+    Type: String
+    Default: https://shwsh.co.uk
+  AnswerModel:
+    Type: String
+    Default: gpt-6-luna
+  CoachModel:
+    Type: String
+    Default: gpt-6-luna
+  WorkflowModel:
+    Type: String
+    Default: gpt-6.1-sol
+  OpenAIBaseUrl:
+    Type: String
+    Default: https://api.openai.com/v1
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 512
+
+Resources:
+  PromptAssessorApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - !Ref AllowedOrigin
+        AllowHeaders:
+          - content-type
+        AllowMethods:
+          - OPTIONS
+          - POST
+
+  ChatFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda/chat
+      Handler: index.handler
+      Environment:
+        Variables:
+          OPENAI_API_KEY: !Ref OpenAIApiKey
+          ANSWER_MODEL: !Ref AnswerModel
+          COACH_MODEL: !Ref CoachModel
+          WORKFLOW_MODEL: !Ref WorkflowModel
+          OPENAI_BASE_URL: !Ref OpenAIBaseUrl
+          ALLOWED_ORIGIN: !Ref AllowedOrigin
+      Events:
+        ChatPost:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref PromptAssessorApi
+            Path: /api/chat
+            Method: POST
+        ChatOptions:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref PromptAssessorApi
+            Path: /api/chat
+            Method: OPTIONS
+
+Outputs:
+  ApiUrl:
+    Description: HTTP API endpoint
+    Value: !Sub "https://${PromptAssessorApi}.execute-api.${AWS::Region}.amazonaws.com"
