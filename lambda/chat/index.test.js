@@ -182,6 +182,12 @@ describe("chat Lambda", () => {
     expect(request.instructions).toContain("distinctive objects, colours, materials and textures");
     expect(request.instructions).toContain("wide establishing shot/GV, mid-shot");
     expect(request.instructions).toContain("for video, add a simple visible action beat or camera movement if wanted");
+    expect(request.instructions).toContain("pose one or two brief, answerable questions");
+    expect(request.instructions).toContain("What is the image for");
+    expect(request.instructions).toContain("which image or video generator will receive the final prompt");
+    expect(request.instructions).toContain("do not penalise an unknown generator if a portable prompt is sufficient");
+    expect(request.instructions).toContain("fluent invented details do not show that the user's choices were captured");
+    expect(request.instructions).toContain("Include relevant [purpose], [generator if known]");
     expect(request.instructions).toContain("better prompt the trainee can give to the AI");
     expect(request.instructions).toContain("Do not refer to 'my request' or rely on earlier chat context");
     expect(request.instructions).toContain("**Visual detail**, **Camera/Format**");

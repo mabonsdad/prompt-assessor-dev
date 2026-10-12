@@ -1,8 +1,8 @@
-import { User, Bot, AlertTriangle, Sparkles } from "lucide-react";
+import { User, Bot, AlertTriangle, Sparkles, MessageSquareText } from "lucide-react";
 import { Message } from "@/hooks/useChat";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
-import { FeedbackDialog } from "@/components/FeedbackDialog";
+import { feedbackMailtoUrl } from "@/lib/feedback";
 import type { ReactNode } from "react";
 
 interface ChatMessageProps {
@@ -132,7 +132,13 @@ export function ChatMessage({ message, isPinned }: ChatMessageProps) {
           </div>
           {message.critique && !message.isLoading && (
             <div className="border-t border-warning/20 pt-2">
-              <FeedbackDialog key={message.id} mode={message.mode} />
+              <a
+                href={feedbackMailtoUrl(message.mode)}
+                className="inline-flex items-center gap-2 rounded-md py-1 text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus:outline-none focus:ring-2 focus:ring-primary/50"
+              >
+                <MessageSquareText className="h-4 w-4" aria-hidden="true" />
+                Email feedback
+              </a>
             </div>
           )}
         </div>
