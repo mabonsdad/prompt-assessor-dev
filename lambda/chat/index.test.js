@@ -156,6 +156,38 @@ describe("chat Lambda", () => {
     expect(request.instructions).toContain("Workflow Coach is the better place to map the whole flow");
   });
 
+  it("coaches visual-scene prompts toward concrete on-screen detail without writing the final image prompt", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ output_text: "# 7/10\nAsk for visible period details and camera framing." }),
+    });
+    globalThis.fetch = fetchMock;
+
+    const response = await loadHandler()({
+      requestContext: { http: { method: "POST" } },
+      body: JSON.stringify({
+        type: "critique",
+        mode: "coach",
+        messages: [
+          { role: "user", content: "Describe a 1970s living room as an image-generation prompt." },
+          { role: "assistant", content: "A room with 1970s decor and a nostalgic mood." },
+        ],
+      }),
+    });
+
+    expect(response.statusCode).toBe(200);
+    const request = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(request.input).toContain("A room with 1970s decor and a nostalgic mood.");
+    expect(request.instructions).toContain("usable visual brief");
+    expect(request.instructions).toContain("distinctive objects, colours, materials and textures");
+    expect(request.instructions).toContain("wide establishing shot/GV, mid-shot");
+    expect(request.instructions).toContain("for video, add a simple visible action beat or camera movement if wanted");
+    expect(request.instructions).toContain("better prompt the trainee can give to the AI");
+    expect(request.instructions).toContain("Do not refer to 'my request' or rely on earlier chat context");
+    expect(request.instructions).toContain("**Visual detail**, **Camera/Format**");
+    expect(request.tools).toBeUndefined();
+  });
+
   it("sends an attachment with the trial answer and rejects files over the app limit", async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ output_text: "A trial answer." }) });
     globalThis.fetch = fetchMock;
