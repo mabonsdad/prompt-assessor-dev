@@ -2,6 +2,7 @@ import { User, Bot, AlertTriangle, Sparkles } from "lucide-react";
 import { Message } from "@/hooks/useChat";
 import ReactMarkdown from "react-markdown";
 import { cn } from "@/lib/utils";
+import { FeedbackDialog } from "@/components/FeedbackDialog";
 import type { ReactNode } from "react";
 
 interface ChatMessageProps {
@@ -129,6 +130,11 @@ export function ChatMessage({ message, isPinned }: ChatMessageProps) {
               </div>
             )}
           </div>
+          {message.critique && !message.isLoading && (
+            <div className="border-t border-warning/20 pt-2">
+              <FeedbackDialog key={message.id} mode={message.mode} />
+            </div>
+          )}
         </div>
       )}
     </div>

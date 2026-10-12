@@ -13,6 +13,8 @@ Workflow Coach accepts an optional PDF, DOCX, TXT, Markdown or CSV file up to 2 
 
 The trial answer and review are model outputs, not verified facts or professional clearance. An attachment is passed to both calls. Use synthetic or authorised, de-identified material in training; do not upload confidential or personal data without organisational approval. See [data flow and limitations](docs/architecture-and-safety.md).
 
+After a review, **Send feedback** opens a small comment modal. Its action opens a draft addressed to `feedback@shwsh.co.uk` in the user's email app; the user sends it from there. Only the comment and coach mode are included automatically—not the prompt, answer or attachment.
+
 ## What is in this repository
 
 - `src/`: Vite/React/TypeScript frontend, including the two-mode interface.
